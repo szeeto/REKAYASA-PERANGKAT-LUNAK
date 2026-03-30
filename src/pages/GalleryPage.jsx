@@ -25,11 +25,17 @@ const galleryItems = [
 
 export default function GalleryPage() {
 	return (
-		<div className="p-7 m-7  rounded-sm shadow-2xl">
-			<h1 className="text-3xl font-bold text-center p-7 mb-7">Galeri RPL</h1>
+		<div className="max-w-6xl mx-auto p-7 m-7 rounded-xl shadow-2xl border-2 border-indigo-300/60 bg-white shadow-indigo-200/60">
+			<h1 className="text-3xl font-bold text-center p-7 mb-7" id='galery' data-aos="fade-up">Galeri RPL</h1>
 			<div className="flex flex-wrap p-3 m-3 justify-center gap-4">
 				{galleryItems.map((img, idx) => (
-					<div key={idx} className="shadow-lg rounded-lg overflow-hidden">
+					<div
+						key={idx}
+						className="shadow-lg rounded-lg overflow-hidden"
+						data-aos="zoom-in"
+						data-aos-delay={100 * (idx + 1)}
+						data-aos-duration="800"
+					>
 						<img src={img.image} alt={img.title} className="w-72 h-64 object-cover" />
 						<div className="p-2 text-center font-semibold">{img.title}</div>
 					</div>

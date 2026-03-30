@@ -1,14 +1,13 @@
-import React from 'react'
 
 export default function GuruPage() {
   const cards = [
     {
-      img: "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&q=80&w=1160",
+      img: "/src/assets/hero-image-about.jpg",
       title: "Reni Darlina M.Kom",
       desc: "Kepala Program Keahlian Rekayasa Perangkat Lunak"
     },
     {
-      img: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&q=80&w=1160",
+      img: "/src/assets/dewi.jpeg",
       title: "Dewi Wulan Sari S.Kom",
       desc: "Guru Mata Pelajaran Produktif RPL"
     },
@@ -28,12 +27,21 @@ export default function GuruPage() {
       desc: "Guru Mata Pelajaran Produktif RPL"
     }
   ];
+
   return (
-    <div className="p-7 m-7 rounded-sm shadow-2xl">
-      <h1 className="text-3xl font-bold text-center p-7 mb-7">Daftar Guru</h1>
+    <div
+      className={`max-w-6xl mx-auto p-7 m-7 rounded-xl shadow-2xl border-2 border-pink-300/60 bg-white shadow-pink-200/60 transition-all duration-1000 ease-out `}
+    >
+      <h1 className="text-3xl font-bold text-center p-7 mb-7" data-aos="fade-up">Daftar Guru</h1>
       <div className="flex flex-wrap p-3 m-3 justify-center gap-6">
         {cards.map((card, idx) => (
-          <div key={idx} className="w-full sm:w-1/2 md:w-1/3 max-w-xs bg-orange-100 rounded-lg shadow-lg overflow-hidden">
+          <div
+            key={idx}
+            className="w-full sm:w-1/2 md:w-1/3 max-w-xs bg-gray-200/5 rounded-lg shadow-lg overflow-hidden"
+            data-aos="zoom-in"
+            data-aos-delay={100 * (idx + 1)}
+            data-aos-duration="800"
+          >
             <a href="#" className="block">
               <img alt="" src={card.img} className="h-100 w-full object-cover" />
               <div className="p-4">

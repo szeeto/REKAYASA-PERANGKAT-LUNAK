@@ -19,22 +19,22 @@ export default function Navbar() {
         <nav aria-label="Global">
           <ul className="flex items-center gap-6 text-sm">
             <li>
-              <NavLink to="/" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>Home</NavLink>
+              <NavLink to="/" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>HOME</NavLink>
             </li>
             <li>
-              <NavLink to="/about" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>About</NavLink>
+              <NavLink to="/about" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>ABOUT</NavLink>
             </li>
             <li>
               <NavLink to="/faq" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>FAQ</NavLink>
             </li>
             <li>
-              <NavLink to="/guru" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>Guru</NavLink>
+              <NavLink to="/guru" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>GURU</NavLink>
             </li>
             <li>
-              <NavLink to="/gallery" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>Gallery</NavLink>
+              <NavLink to="/gallery" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>GALLERY</NavLink>
             </li>
                         <li>
-              <NavLink to="/blog" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>Blog</NavLink>
+              <NavLink to="/blog" className={({ isActive }) => isActive ? "text-teal-600 font-bold" : "text-gray-500 transition hover:text-gray-700"}>BLOG</NavLink>
             </li>
           </ul>   
         </nav>
@@ -42,7 +42,7 @@ export default function Navbar() {
 
       <div className="flex items-center gap-4">
         <button
-          className="text-white rounded-sm bg-emerald-600 px-4 py-2"
+          className="text-white rounded-sm bg-emerald-600 px-4 py-2 hover:bg-emerald-700 transition"
           onClick={() => navigate('/login')}
         >
           Login

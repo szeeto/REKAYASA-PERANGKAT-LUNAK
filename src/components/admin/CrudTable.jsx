@@ -1,5 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { db } from '../../firebase/firebaseClient';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+
 
 export default function CrudTable({ tableName, columns }) {
   const [data, setData] = useState([]);
@@ -9,16 +12,18 @@ export default function CrudTable({ tableName, columns }) {
 
   const fetchData = async () => {
     setLoading(true);
-    const { data } = await supabase.from(tableName).select('*').order('id', { ascending: false });
-    setData(data || []);
+    try {
+      const querySnapshot = await getDocs(collection(db, tableName));
+      const docsData = querySnapshot.docs.map(docu => ({ id: docu.id, ...docu.data() }));
+      setData(docsData);
+    } catch (err) {
+      setData([]);
+    }
     setLoading(false);
   };
 
   useEffect(() => {
-    const fetch = async () => {
-      await fetchData();
-    };
-    fetch();
+    fetchData();
     // eslint-disable-next-line
   }, [tableName]);
 
@@ -28,21 +33,24 @@ export default function CrudTable({ tableName, columns }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validasi field kosong
     for (const col of columns) {
       if (!col.readOnly && col.key !== 'image_url' && !form[col.key]) {
         alert(`Field ${col.label} tidak boleh kosong!`);
         return;
       }
     }
-    if (editing) {
-      await supabase.from(tableName).update(form).eq('id', editing);
-    } else {
-      await supabase.from(tableName).insert([form]);
+    try {
+      if (editing) {
+        await updateDoc(doc(db, tableName, editing), form);
+      } else {
+        await addDoc(collection(db, tableName), form);
+      }
+      setForm({});
+      setEditing(null);
+      fetchData();
+    } catch (err) {
+      alert('Gagal menyimpan data!');
     }
-    setForm({});
-    setEditing(null);
-    fetchData();
   };
 
   const handleEdit = (row) => {
@@ -51,24 +59,18 @@ export default function CrudTable({ tableName, columns }) {
   };
 
   const handleDelete = async (id) => {
-    // Jika gallery, hapus juga file dari storage
-    if (tableName === 'gallery') {
-      const { data: row } = await supabase.from('gallery').select('image_url').eq('id', id).single();
-      if (row && row.image_url) {
-        // Ekstrak nama file dari publicUrl
-        const urlParts = row.image_url.split('/');
-        const fileName = urlParts[urlParts.length - 1].split('?')[0];
-        await supabase.storage.from('gallery').remove([fileName]);
-      }
+    try {
+      await deleteDoc(doc(db, tableName, id));
+      fetchData();
+    } catch (err) {
+      alert('Gagal menghapus data!');
     }
-    await supabase.from(tableName).delete().eq('id', id);
-    fetchData();
   };
 
   return (
-    <div className="mb-8">
-      {/* Form modern grid */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-end max-w-3xl mx-auto">
+    <div className="mb-8 animate-fade-in">
+      {/* Form modern grid dengan efek gradient */}
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-end max-w-3xl mx-auto bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-6 rounded-2xl shadow-lg">
         {columns.filter(col => !col.readOnly && col.key !== 'image_url').map(col => (
           <div key={col.key} className="flex flex-col">
             <label className="text-xs font-medium mb-1 text-gray-600 tracking-wide uppercase">{col.label}</label>
@@ -92,7 +94,7 @@ export default function CrudTable({ tableName, columns }) {
           </div>
         ))}
         <div className="flex gap-2 mt-2 md:col-span-2">
-          <button type="submit" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow transition text-base">
+          <button type="submit" className={`flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-700 hover:to-pink-600 text-white px-6 py-2 rounded-lg font-semibold shadow transition text-base ${editing ? 'animate-pulse' : ''}`}>
             {editing ? (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" /></svg>
             ) : (
@@ -105,8 +107,8 @@ export default function CrudTable({ tableName, columns }) {
           )}
         </div>
       </form>
-      {/* Tabel modern */}
-      <div className="overflow-x-auto rounded-xl shadow border border-slate-200 bg-white">
+      {/* Tabel modern dengan efek interaktif */}
+      <div className="overflow-x-auto rounded-xl shadow border border-slate-200 bg-white/80 animate-fade-in">
         {loading ? (
           <div className="flex justify-center items-center py-10">
             <svg className="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -126,7 +128,7 @@ export default function CrudTable({ tableName, columns }) {
             </thead>
             <tbody>
               {data.map(row => (
-                <tr key={row.id} className="hover:bg-slate-50 transition">
+                <tr key={row.id} className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200">
                   {columns.map(col => (
                     <td key={col.key} className="px-3 py-2 border-b border-slate-100 align-top">
                       {tableName === 'gallery' && col.key === 'image_url' && row[col.key] ? (

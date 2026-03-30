@@ -53,11 +53,6 @@ export default function Homepage() {
             </div>
           </div>
         </section>
-          <AboutPage />
-          <FaqPage />
-          <GuruPage />
-          <GalleryPage />
-          <BlogPage />
       </div>
     </>
   );
