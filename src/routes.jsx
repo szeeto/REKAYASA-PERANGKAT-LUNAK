@@ -48,6 +48,7 @@ import GuruPage from './pages/GuruPage.jsx';
 import BlogPage from './pages/BlogPage.jsx';
 import BlogDetailPage from './pages/BlogDetailPage.jsx';
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
+import FaqManagement from './components/admin/FaqManagement.jsx';
 import BlogManagement from './components/admin/BlogManagement.jsx';
 import GalleryManagement from './components/admin/GalleryManagement.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -76,8 +77,9 @@ function AppRoutesInner() {
         <Route path="/login" element={<LoginPage />} />
         {/* Admin protected routes */}
         <Route path="/admin" element={<AdminDashboardPage />}>
-          <Route path="blogs" element={<BlogManagement />} />
+          <Route path="blog" element={<BlogManagement />} />
           <Route path="gallery" element={<GalleryManagement />} />
+          <Route path="faq" element={<FaqManagement />} />
         </Route>
       </Routes>
       {!hideFooter && <FooterComponents />}

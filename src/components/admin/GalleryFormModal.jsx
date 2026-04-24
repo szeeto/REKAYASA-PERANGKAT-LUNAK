@@ -1,4 +1,8 @@
-import React, { useState, useRef } from "react";
+
+import React, { useState, useRef, useEffect } from "react";
+import { db, storage } from '../../firebase/firebaseClient';
+import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 const GalleryFormModal = ({ open, onClose, item }) => {
   const [form, setForm] = useState({
@@ -8,10 +12,29 @@ const GalleryFormModal = ({ open, onClose, item }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [newFile, setNewFile] = useState(null); // track if new file uploaded
   const fileRef = useRef();
+
+  useEffect(() => {
+    setForm({
+      title: item?.title || "",
+      description: item?.description || "",
+      image_url: item?.image_url || "",
+    });
+    setNewFile(null);
+    setError(null);
+  }, [item, open]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // Upload file to Firebase Storage and get URL
+  const uploadFile = async (file) => {
+    const filePath = `gallery/${Date.now()}_${file.name}`;
+    const storageRefObj = ref(storage, filePath);
+    await uploadBytes(storageRefObj, file);
+    return await getDownloadURL(storageRefObj);
   };
 
   const handleFileChange = async (e) => {
@@ -19,10 +42,30 @@ const GalleryFormModal = ({ open, onClose, item }) => {
     if (!file) return;
     setLoading(true);
     setError(null);
-    const filePath = `${Date.now()}_${file.name}`;
-    // TODO: Implement file upload with new backend
-    setError('Upload file belum diimplementasikan.');
+    try {
+      const url = await uploadFile(file);
+      setForm(f => ({ ...f, image_url: url }));
+      setNewFile(file); // mark new file uploaded
+    } catch (err) {
+      setError('Gagal upload gambar: ' + (err.message || err));
+    }
     setLoading(false);
+  };
+
+  // Fungsi untuk menghapus gambar lama dari storage
+  const deleteOldImage = async (oldUrl) => {
+    if (!oldUrl) return;
+    try {
+      // Extract path from URL
+      const matches = oldUrl.match(/%2F(.+?)\?/);
+      const filePath = matches ? decodeURIComponent(matches[1]) : null;
+      if (filePath) {
+        const storageRefObj = ref(storage, filePath);
+        await deleteObject(storageRefObj);
+      }
+    } catch (err) {
+      // ignore error
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -30,16 +73,38 @@ const GalleryFormModal = ({ open, onClose, item }) => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: Implement gallery save logic with new backend
-      setError('Simpan gallery belum diimplementasikan.');
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      if (err.name === "AbortError") {
-        setError("Request dibatalkan, coba ulangi.");
-      } else {
-        setError(err.message || "Gagal menyimpan data.");
+      if (!form.title || !form.description || !form.image_url) {
+        setError('Semua field wajib diisi dan gambar harus diupload.');
+        setLoading(false);
+        return;
       }
+      if (item) {
+        // Edit mode
+        // Jika ada gambar baru, hapus gambar lama
+        if (newFile && item.image_url && form.image_url !== item.image_url) {
+          await deleteOldImage(item.image_url);
+        }
+        await updateDoc(doc(db, 'gallery', item.id), {
+          title: form.title,
+          description: form.description,
+          image_url: form.image_url,
+        });
+        setLoading(false);
+        onClose(true, { type: 'success', message: 'Galeri berhasil diupdate.' });
+      } else {
+        // Add mode
+        await addDoc(collection(db, 'gallery'), {
+          title: form.title,
+          description: form.description,
+          image_url: form.image_url,
+        });
+        setLoading(false);
+        onClose(true, { type: 'success', message: 'Galeri berhasil ditambahkan.' });
+      }
+    } catch (err) {
+      console.error('Error saving gallery:', err);
+      setError(err.message || "Gagal menyimpan data.");
+      setLoading(false);
     }
   };
 

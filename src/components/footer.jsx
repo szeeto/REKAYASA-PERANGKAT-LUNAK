@@ -21,9 +21,9 @@ export default function Footer() {
         </div>
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
           <div className="flex gap-4 text-2xl">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:text-pink-700 transition-all"><FaInstagram /></a>
+            <a href="https://www.instagram.com/rplsmkn1bukitsundi?igsh=MXExenU0NHM1am81YQ==" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:text-pink-700 transition-all"><FaInstagram /></a>
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-all"><FaFacebook /></a>
-            <a href="mailto:info@smkn1bukitsundi.sch.id" className="text-emerald-600 hover:text-emerald-800 transition-all"><FaEnvelope /></a>
+            <a href="mailto:rplsmkn1bukitsundii@gmail.com" className="text-emerald-600 hover:text-emerald-800 transition-all"><FaEnvelope /></a>
             <a href="https://smkn1bukitsundi.sch.id" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 transition-all"><FaGlobe /></a>
           </div>
           <div className="text-center md:text-right text-gray-600 text-sm">
@@ -31,7 +31,7 @@ export default function Footer() {
           </div>
         </div>
         <p className="text-center text-gray-500 text-sm mt-2">
-          &copy; {new Date().getFullYear()} Dibuat Oleh <span className="font-bold text-blue-700">Patra Sawali XII RPL 2</span>
+          &copy; {new Date().getFullYear()} Dibuat Oleh <span className="font-bold text-blue-700">Patra Sawali XII RPL 2  </span>
         </p>
       </div>
     </footer>

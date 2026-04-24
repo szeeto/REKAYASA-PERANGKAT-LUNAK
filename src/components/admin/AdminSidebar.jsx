@@ -2,8 +2,9 @@ import React from "react";
 import { Outlet, NavLink } from "react-router-dom";
 
 const sidebarMenu = [
-  { name: "Blog Management", path: "/admin/blogs" },
+  { name: "Blog Management", path: "/admin/blog" },
   { name: "Gallery Management", path: "/admin/gallery" },
+  { name: "FAQ Management", path: "/admin/faq" },
 ];
 
 const AdminSidebar = ({ onLogout }) => (

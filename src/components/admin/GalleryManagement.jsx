@@ -1,5 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 import GalleryFormModal from "./GalleryFormModal";
+import { db } from '../../firebase/firebaseClient';
+import { collection, getDocs } from 'firebase/firestore';
 
 const GalleryManagement = () => {
   const [gallery, setGallery] = useState([]);
@@ -10,8 +13,14 @@ const GalleryManagement = () => {
 
   const fetchGallery = async () => {
     setLoading(true);
-    // TODO: Implement fetch gallery with new backend
-    setNotif({ type: "error", message: 'Fetch gallery belum diimplementasikan.' });
+    setNotif(null);
+    try {
+      const querySnapshot = await getDocs(collection(db, 'gallery'));
+      const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setGallery(items);
+    } catch (err) {
+      setNotif({ type: "error", message: 'Gagal mengambil data galeri: ' + (err.message || err) });
+    }
     setLoading(false);
   };
 
@@ -33,13 +42,32 @@ const GalleryManagement = () => {
   };
   const handleDelete = async (item) => {
     if (!window.confirm("Delete this image?")) return;
-    // Delete from storage first
-    if (item.image_url) {
-      const path = item.image_url.split("/storage/v1/object/public/")[1];
+    setNotif(null);
+    setLoading(true);
+    try {
+      // Delete image from Firebase Storage
+      if (item.image_url) {
+        // Extract path from URL
+        const url = item.image_url;
+        const matches = url.match(/%2F(.+?)\?/);
+        const filePath = matches ? decodeURIComponent(matches[1]) : null;
+        if (filePath) {
+          const { ref: storageRef } = await import('firebase/storage');
+          const { deleteObject } = await import('firebase/storage');
+          const { storage } = await import('../../firebase/firebaseClient');
+          await deleteObject(storageRef(storage, filePath));
+        }
+      }
+      // Delete Firestore document
+      const { doc, deleteDoc } = await import('firebase/firestore');
+      const { db } = await import('../../firebase/firebaseClient');
+      await deleteDoc(doc(db, 'gallery', item.id));
+      setNotif({ type: 'success', message: 'Gambar berhasil dihapus.' });
+      await fetchGallery();
+    } catch (err) {
+      setNotif({ type: "error", message: 'Gagal menghapus galeri: ' + (err.message || err) });
     }
-    // Delete from table
-    // TODO: Implement delete gallery with new backend
-    setNotif({ type: "error", message: 'Delete gallery belum diimplementasikan.' });
+    setLoading(false);
   };
   const handleModalClose = (refresh, msg) => {
     setModalOpen(false);

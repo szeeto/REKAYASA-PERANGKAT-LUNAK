@@ -2,7 +2,7 @@
 export default function GuruPage() {
   const cards = [
     {
-      img: "/src/assets/hero-image-about.jpg",
+      img: "/src/assets/reni darlina.jpeg",
       title: "Reni Darlina M.Kom",
       desc: "Kepala Program Keahlian Rekayasa Perangkat Lunak"
     },
@@ -22,7 +22,7 @@ export default function GuruPage() {
       desc: "Guru Mata Pelajaran Produktif RPL"
     },
     {
-      img: "/src/assets/yolan.jpeg" ,
+      img: "/src/assets/yolan.jpeg",
       title: "Yolan Andrika Refi S.Pd",
       desc: "Guru Mata Pelajaran Produktif RPL"
     }
